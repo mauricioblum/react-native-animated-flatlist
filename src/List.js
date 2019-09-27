@@ -12,24 +12,22 @@ export default class AnimatedFlatlist extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.state.data.length) {
       this.setState({ data: this.props.items });
     }
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (prevState.items !== nextProps.items || prevState.id !== nextProps.id) {
-      const { items = [], id } = nextProps;
-      const { data = [] } = this.state;
-      const deleted = _.difference(data, items).map(item => {
-        item._isDeleted = true;
-        return item;
-      });
+    const { items = [], id } = nextProps;
+    const { data = [] } = prevState;
+    const deleted = _.difference(data, items).map(item => {
+      item._isDeleted = true;
+      return item;
+    });
 
-      const newData = _.unionBy(items, deleted, id);
-      this.setState({ refresh: !this.state.refresh, data: newData });
-    }
+    const newData = _.unionBy(items, deleted, id);
+    return { refresh: !prevState.refresh, data: newData };
   }
 
   shouldComponentUpdate(nextProps) {
@@ -55,7 +53,7 @@ export default class AnimatedFlatlist extends React.Component {
       <FlatList
         data={this.state.data}
         {...rest}
-        keyExtractor={item => item[id].toString()}
+        keyExtractor={item => String(item[id])}
         extraData={this.state.refresh}
         renderItem={({ item, index }) => {
           const component = rowItem({ item, index });

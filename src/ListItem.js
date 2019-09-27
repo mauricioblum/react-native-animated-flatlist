@@ -2,10 +2,13 @@ import React, { Component } from "react";
 import * as Animatable from "react-native-animatable";
 
 class ListItem extends Component {
-  state = {
-    isVisible: true,
-    isVisibleView: true
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isVisible: true,
+      isVisibleView: true
+    };
+  }
 
   componentDidMount() {
     // this.setState({ isVisible: this.props._isVisible })
@@ -13,10 +16,11 @@ class ListItem extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.isDeleted !== prevState.isDeleted) {
-      this.setState({ isVisible: nextProps.isDeleted === true ? false : true });
-      // this.forceUpdate()
       this.animatedRef.startAnimation();
+      return { isVisible: nextProps.isDeleted === true ? false : true };
+      // this.forceUpdate()
     }
+    return null;
   }
 
   animationEnded = () => {
